@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ai4.notice.NoticeDAOInter"> 
+  <!-- 등록 -->
+  <insert id="create" parameterType="NoticeVO">
+    INSERT INTO fnotice(noticeno, memberno, title, content, rdate)
+    VALUES((SELECT NVL(MAX(noticeno), 0)+1 as noticeno FROM fnotice),
+              #{memberno}, #{title}, #{content}, sysdate)
+  </insert>
+  
+  <!-- 목록(JOIN) -->
+  <select id="list" resultType="Mem_NoticeVO">
+     SELECT m.memberno, m.thumbs, m.nickname,
+               n.memberno, n.noticeno, n.title, n.content, n.rdate
+     FROM fmember m, fnotice n  
+     WHERE m.memberno = n.memberno
+     ORDER BY n.noticeno DESC
+  </select>
+
+  <!-- 조회 -->
+  <select id="read" resultType="Mem_NoticeVO" parameterType="int">
+    SELECT m.memberno, m.thumbs, m.nickname,
+              n.noticeno, n.title, n.content, n.rdate
+    FROM fmember m, fnotice n
+    WHERE (n.noticeno = #{n.noticeno}) AND (m.memberno = n.memberno)
+  </select>
+  
+   <!-- 수정 -->
+   <update id="update" parameterType="NoticeVO">
+     UPDATE fnotice
+     SET title=#{title}, content=#{content}
+     WHERE noticeno=#{noticeno}
+   </update>
+   
+   <!-- 삭제 -->
+   <delete id="delete" parameterType="int">
+     DELETE FROM fnotice 
+     WHERE noticeno = #{noticeno}
+   </delete>
+   
+   <!-- 검색 -->
+<!--    <select id="list_by_search" resultType="NoticeVO" parameterType="HashMap">
+      SELECT noticeno, memberno, title, content, rdate
+      FROM fnotice
+      <choose>
+        <when test="word == null or word == ''"> 검색하지 않는 경우
+        </when>
+        <otherwise>
+          WHERE title LIKE '%' || #{word} || '%' OR content LIKE '%' || #{word} || '%' 
+        </otherwise>
+      </choose>
+      ORDER BY noticeno DESC
+   </select> -->
+   
+   <!-- 검색된 레코드 갯수 -->
+  <select id="search_count" resultType="int" parameterType="HashMap">
+        SELECT COUNT(*) as cnt
+        FROM fnotice
+        <choose>
+          <when test="word == null or word == ''"> <!-- 검색하지 않는 경우 -->
+          </when>
+          <otherwise>
+            WHERE title LIKE '%' || #{word} || '%' OR content LIKE '%' || #{word} || '%' 
+          </otherwise>
+    </choose>
+  </select>
+   
+   <!-- 검색된 레코드 목록 + 페이징 -->
+   <select id="list_by_search_paging" resultType="Mem_NoticeVO" parameterType="HashMap">
+      SELECT memberno, thumbs, nickname,
+                noticeno, title, content, rdate, r
+      FROM(
+            SELECT memberno, thumbs, nickname,
+                      noticeno, title, content, rdate, rownum as r
+            FROM(
+                      SELECT m.memberno, m.thumbs, m.nickname,
+                                n.noticeno, n.title, n.content, n.rdate
+                      FROM fmember m, fnotice n
+                      <choose>
+                      <when test="word == null or word == ''"> <!-- 검색하지 않는 경우 -->
+                      </when>
+                      <otherwise>
+                        WHERE m.memberno = n.memberno AND n.title LIKE '%' || #{word} || '%' OR n.content LIKE '%' || #{word} || '%' 
+                      </otherwise>
+                      </choose>
+                      ORDER BY n.noticeno DESC
+            )
+      )
+      WHERE <![CDATA[r >= #{startNum} AND r <= #{endNum}]]>
+      <!-- WHERE r >=1 AND r <= 3 -->
+   </select>
+   
+</mapper>

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.ai4.msg.MsgDAOInter">
+
+<!-- 쪽지 보내기 (등록/생성) -->
+<insert id="create" parameterType="MsgVO">
+  INSERT INTO msg(msgno, msgsender, msgreceiver, msgtitle, msgcontent, msgtime, thumbs, files, sizes, mcnt, contentsno)
+  VALUES((SELECT NVL(MAX(msgno), 0)+1 as msgno FROM msg),
+                 #{msgsender}, #{msgreceiver}, #{msgtitle}, #{msgcontent}, sysdate, #{thumbs}, #{files}, #{sizes}, 0, #{contentsno})
+</insert>
+
+<!-- 내가 판매자인경우 목록 -->
+<select id="list_seller" resultType="ContentVO"  parameterType="int">
+  SELECT contentsno, cateno, memberno, title, contents, rdate
+  FROM content
+  WHERE contentsno IN (SELECT contentsno FROM msg WHERE msgreceiver = #{msgreceiver})
+  and memberno=#{msgreceiver}
+  ORDER BY contentsno DESC
+</select>
+
+<!-- 내가 구매자인경우 목록 -->
+<select id="list_buyer" resultType="Mem_ContentVO" parameterType="int">
+  SELECT m.memberno, m.nickname, m.mname,
+            c.memberno, c.contentsno, c.title, c.contents, c.rdate
+  FROM fmember m, content c
+  WHERE (c.memberno = m.memberno) 
+  and (c.contentsno IN (SELECT contentsno FROM msg WHERE msgsender = #{memberno})) 
+  and c.memberno != #{memberno} 
+  ORDER BY c.contentsno DESC
+</select>
+
+<!-- Join 1건 조회 -->
+<select id="read_by_join" resultType="Mem_ContentVO" parameterType="int">
+  SELECT m.memberno, m.mname, 
+            c.memberno, c.contentsno, c.title, c.contents, c.rdate
+  FROM fmember m, content c
+  WHERE (c.contentsno = #{contentsno}) AND (c.memberno = m.memberno)
+</select> 
+
+<!-- 보낸 쪽지 목록 -->
+<select id="list_send" resultType="Mem_MsgVO" parameterType="HashMap">
+  SELECT m.nickname as receivernickname, m.mname as receivermname,
+            g.msgno, g.msgsender, g.msgreceiver, g.msgtitle, g.msgcontent, g.msgtime, g.mcnt
+  FROM fmember m, msg g
+  WHERE (g.msgreceiver = m.memberno) and g.msgsender = #{memberno} and contentsno=#{contentsno}
+  ORDER BY g.msgno DESC
+</select>
+
+<!-- 받은 쪽지 목록 -->
+<select id="list_receive" resultType="Mem_MsgVO" parameterType="HashMap">
+  SELECT m.nickname as receivernickname, m.mname as receivermname,
+          g.msgno, g.msgsender, g.msgreceiver, g.msgtitle, g.msgcontent, g.msgtime, g.mcnt
+  FROM fmember m, msg g
+  WHERE (g.msgsender = m.memberno) and g.msgreceiver = #{memberno} and contentsno=#{contentsno}
+  ORDER BY g.msgno DESC
+</select>
+
+<!-- 쪽지 보기 -->
+<select id="read_msg" resultType="MsgVO" parameterType="int">
+  SELECT msgno, msgtitle, msgsender, msgreceiver, msgcontent, msgtime, thumbs, files, sizes, mcnt, contentsno
+  FROM msg
+  WHERE msgno = #{msgno}
+</select>
+
+<!-- 읽음 안읽음 확인 -->
+<update id="check_msg" parameterType="HashMap">
+  UPDATE msg
+  SET mcnt = mcnt + 1
+  WHERE msgno = #{msgno} AND msgreceiver = #{msgreceiver}
+</update>
+
+<!-- 쪽지 삭제하기 -->
+<delete id = "delete_msg" parameterType = "int">
+  DELETE FROM msg
+  WHERE msgno = #{msgno}
+</delete>
+
+<!-- 보낸 쪽지 검색된 레코드 갯수 -->
+<select id="search_count" resultType="int" parameterType="HashMap">
+    SELECT COUNT(*) as cnt
+    FROM fmember m, msg g
+    WHERE (g.msgreceiver = m.memberno) and g.msgsender =  #{memberno} and contentsno=#{contentsno}
+    <choose>
+      <when test="col == 'nickname'"> <!-- 이름 검색 -->
+         and m.nickname LIKE '%' || #{word} || '%'  
+      </when>
+      <when test="col == 'msgtitle'"> <!-- 제목 검색 -->
+        and g.msgtitle LIKE '%' || #{word} || '%'  
+      </when>
+      <when test="col == 'msgcontent'"> <!-- 내용 검색 -->
+        and g.msgcontent LIKE '%' || #{word} || '%'  
+      </when>
+      <when test="col == 'msgtitle_content'"> <!-- 제목+내용 검색 -->
+        and (g.msgtitle LIKE '%' || #{word} || '%' OR g.msgcontent LIKE '%' || #{word} || '%')
+      </when>
+    </choose>
+</select>
+
+<!-- 보낸 쪽지 목록 + 검색 + 페이징 -->
+<select id="send_list_search_paging" resultType="Mem_MsgVO" parameterType="HashMap">
+    SELECT receivernickname, receivermname,
+          msgno, msgsender, msgreceiver, msgtitle, msgcontent, msgtime, mcnt, r
+    FROM(
+              SELECT receivernickname, receivermname,
+                   msgno, msgsender, msgreceiver, msgtitle, msgcontent, msgtime, mcnt, rownum as r
+              FROM(
+                        SELECT m.nickname as receivernickname, m.mname as receivermname,
+                                  g.msgno, g.msgsender, g.msgreceiver, g.msgtitle, g.msgcontent, g.msgtime, g.mcnt
+                        FROM fmember m, msg g
+                        WHERE (g.msgreceiver = m.memberno) and g.msgsender = #{memberno} and contentsno=#{contentsno}
+                        <choose>
+                          <when test="col == 'nickname'"> <!-- 이름 검색 -->
+                            and m.nickname LIKE '%' || #{word} || '%'  
+                          </when>
+                          <when test="col == 'msgtitle'"> <!-- 제목 검색 -->
+                            and g.msgtitle LIKE '%' || #{word} || '%'  
+                          </when>
+                          <when test="col == 'msgcontent'"> <!-- 내용 검색 -->
+                            and g.msgcontent LIKE '%' || #{word} || '%'  
+                          </when>
+                          <when test="col == 'msgtitle_content'"> <!-- 제목+내용 검색 -->
+                            and (g.msgtitle LIKE '%' || #{word} || '%' OR g.msgcontent LIKE '%' || #{word} || '%')
+                          </when>
+                        </choose>
+                        ORDER BY msgno DESC
+              )
+    )
+    WHERE <![CDATA[r >=#{startNum} AND r <=#{endNum}]]>
+    <!-- WHERE r >=1 AND r <= 3 -->
+</select>
+  
+<!-- 받은 쪽지 검색된 레코드 갯수 -->
+<select id="search_count2" resultType="int" parameterType="HashMap">
+    SELECT COUNT(*) as cnt
+    FROM fmember m, msg g
+    WHERE (g.msgsender = m.memberno) and g.msgreceiver = #{memberno} and contentsno=#{contentsno}
+    <choose>
+      <when test="col == 'nickname'"> <!-- 이름 검색 -->
+         and m.nickname LIKE '%' || #{word} || '%'  
+      </when>
+      <when test="col == 'msgtitle'"> <!-- 제목 검색 -->
+        and g.msgtitle LIKE '%' || #{word} || '%'  
+      </when>
+      <when test="col == 'msgcontent'"> <!-- 내용 검색 -->
+        and g.msgcontent LIKE '%' || #{word} || '%'  
+      </when>
+      <when test="col == 'msgtitle_content'"> <!-- 제목+내용 검색 -->
+        and (g.msgtitle LIKE '%' || #{word} || '%' OR g.msgcontent LIKE '%' || #{word} || '%')
+      </when>
+    </choose>
+</select>  
+  
+<!-- 받은 쪽지 목록 + 검색 + 페이징 -->
+<select id="receive_list_search_paging" resultType="Mem_MsgVO" parameterType="HashMap">
+    SELECT receivernickname, receivermname,
+            msgno, msgsender, msgreceiver, msgtitle, msgcontent, msgtime, mcnt, r
+    FROM(
+              SELECT receivernickname, receivermname,
+                    msgno, msgsender, msgreceiver, msgtitle, msgcontent, msgtime, mcnt, rownum as r
+              FROM(
+                        SELECT m.nickname as receivernickname, m.mname as receivermname,
+                                  g.msgno, g.msgsender, g.msgreceiver, g.msgtitle, g.msgcontent, g.msgtime, g.mcnt
+                        FROM fmember m, msg g
+                        WHERE (g.msgsender = m.memberno) and g.msgreceiver = #{memberno} and contentsno=#{contentsno}
+                        <choose>
+                          <when test="col == 'nickname'"> <!-- 이름 검색 -->
+                            and m.nickname LIKE '%' || #{word} || '%'  
+                          </when>
+                          <when test="col == 'msgtitle'"> <!-- 제목 검색 -->
+                            and g.msgtitle LIKE '%' || #{word} || '%'  
+                          </when>
+                          <when test="col == 'msgcontent'"> <!-- 내용 검색 -->
+                            and g.msgcontent LIKE '%' || #{word} || '%'  
+                          </when>
+                          <when test="col == 'msgtitle_content'"> <!-- 제목+내용 검색 -->
+                            and (g.msgtitle LIKE '%' || #{word} || '%' OR g.msgcontent LIKE '%' || #{word} || '%')
+                          </when>
+                        </choose>
+                        ORDER BY msgno DESC
+              )
+    )
+    WHERE <![CDATA[r >=#{startNum} AND r <=#{endNum}]]>
+    <!-- WHERE r >=1 AND r <= 3 -->
+</select>
+
+<!-- 게시글 안에 모든 쪽지 삭제하기 -->
+<delete id = "delete_all_msg" parameterType = "int">
+  DELETE FROM msg
+  WHERE contentsno = #{contentsno}
+</delete>
+
+</mapper>

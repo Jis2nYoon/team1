@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.ai4.surveyitem.SurveyitemDAOInter">
+<!-- 관리자만 등록 목록 수정 삭제 할수있게 -->
+ 
+<!-- 설문 항목 등록 -->
+<insert id="create" parameterType="SurveyitemVO">
+  INSERT INTO fsurveyitem(surveyitemno, surveyno, item, itemcnt)
+  VALUES((SELECT NVL(MAX(surveyitemno), 0)+1 as surveyitemno FROM fsurveyitem), 
+            #{surveyno}, #{item}, 0)
+</insert>
+
+<!-- 설문 항목 목록 -->
+<select id="list" resultType="SurveyitemVO"  parameterType="int">
+  SELECT *
+  FROM fsurveyitem
+  WHERE surveyno=#{surveyno}
+</select>
+
+<!-- 조회 -->
+<select id="read" resultType="SurveyitemVO" parameterType="int">
+  SELECT *
+  FROM fsurveyitem
+  WHERE surveyitemno = #{surveyitemno}
+</select>
+
+<!-- 설문 항목 수정 -->
+<update id="update" parameterType="SurveyitemVO">
+  UPDATE fsurveyitem
+  SET item=#{item}
+  WHERE surveyitemno = #{surveyitemno}
+</update>
+
+<!-- 삭제 -->
+<delete id="delete_item" parameterType = "int">
+  DELETE FROM fsurveyitem
+  WHERE surveyitemno = #{surveyitemno}
+</delete>
+
+<!-- 설문 항목 갯수 구하기 -->
+<select id="countByItem" parameterType ="int" resultType="int">
+  SELECT COUNT(surveyitemno) as cnt
+  FROM fsurveyitem
+  WHERE surveyno = #{surveyno}
+</select>
+
+</mapper>

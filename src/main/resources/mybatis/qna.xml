@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ai4.qna.QnaDAOInter"> 
+
+  <!-- 등록 -->
+  <insert id="create" parameterType="QnaVO">
+    INSERT INTO fqna(qnano, memberno, title, content, files, filesizes, thumbs, grpno, indent, ansnum, rdate)
+    VALUES((SELECT NVL(MAX(qnano), 0)+1 as qnano FROM fqna),
+              #{memberno}, #{title}, #{content}, #{files}, #{filesizes}, #{thumbs}, 
+              (SELECT NVL(MAX(grpno), 0) + 1 as grpno FROM fqna), 
+              #{indent}, #{ansnum}, sysdate)
+  </insert>
+
+  <!-- 목록 -->
+  <select id="list" resultType="Mem_QnaVO">
+    SELECT m.memberno, m.thumbs as memthumbs, m.nickname,
+              q.memberno, q.qnano, q.title, q.content, 
+              q.files, q.filesizes, q.thumbs as qnathumbs, q.grpno, q.indent, q.ansnum, q.rdate
+    FROM fmember m, fqna q  
+    WHERE m.memberno = q.memberno
+    ORDER BY q.grpno DESC, q.ansnum ASC
+  </select>
+  
+  <!-- 조회  -->
+  <select id="read" resultType="Mem_QnaVO" parameterType="int">
+    SELECT m.memberno, m.thumbs as memthumb, m.nickname,
+              q.memberno, q.qnano, q.title, q.content, 
+              q.files, q.filesizes, q.thumbs as qnathumb, q.grpno, q.indent, q.ansnum, q.rdate
+    FROM fmember m, fqna q
+    WHERE m.memberno = q.memberno AND qnano=#{qnano}
+  </select>
+  
+   <!-- 수정 -->
+   <update id="update" parameterType="QnaVO">
+     UPDATE fqna
+     SET title=#{title}, content=#{content}, files=#{files}, filesizes=#{filesizes}, thumbs=#{thumbs}
+     WHERE qnano=#{qnano}
+   </update>
+   
+   <!-- 삭제 -->
+   <delete id="delete" parameterType="int">
+     DELETE FROM fqna 
+     WHERE qnano = #{qnano}
+   </delete>
+   
+   <!-- 답변 차수 증가 -->
+  <update id="increaseAnsnum" parameterType="HashMap">
+    UPDATE fqna
+    SET ansnum = ansnum + 1
+    WHERE grpno = #{grpno} AND ansnum > #{ansnum}
+  </update>
+
+  <!-- 답변 -->
+  <insert id="reply" parameterType="QnaVO">
+    INSERT INTO fqna(qnano, memberno, title, content, files, filesizes, thumbs, grpno, indent, ansnum, rdate)  
+    VALUES((SELECT NVL(MAX(qnano), 0) + 1 as qnano FROM fqna),
+                #{memberno}, #{title}, #{content}, #{files}, #{filesizes}, #{thumbs}, 
+                #{grpno}, #{indent}, #{ansnum}, sysdate)
+  </insert>
+</mapper>

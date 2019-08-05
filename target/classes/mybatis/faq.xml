@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ai4.faq.FaqDAOInter"> 
+  <!-- 등록 -->
+  <insert id="create" parameterType="FaqVO">
+    INSERT INTO ffaq(faqno, question, answer, memberno)
+    VALUES((SELECT NVL(MAX(faqno), 0)+1 as faqno FROM ffaq),
+              #{question}, #{answer}, #{memberno})
+  </insert>
+
+  <!-- 목록 -->
+  <select id="list" resultType="FaqVO">
+    SELECT faqno, question, answer, memberno
+    FROM ffaq
+    ORDER BY faqno DESC
+  </select>
+  
+  <!-- 조회 -->
+  <select id="read" resultType="FaqVO" parameterType="int">
+    SELECT faqno, question, answer, memberno
+    FROM ffaq
+    WHERE faqno=#{faqno}
+  </select>
+  
+   <!-- 수정 -->
+   <update id="update" parameterType="FaqVO">
+     UPDATE ffaq
+     SET question=#{question}, answer=#{answer}
+     WHERE faqno=#{faqno}
+   </update>
+   
+   <!-- 삭제 -->
+   <delete id="delete" parameterType="int">
+     DELETE FROM ffaq 
+     WHERE faqno = #{faqno}
+   </delete>
+   
+</mapper>

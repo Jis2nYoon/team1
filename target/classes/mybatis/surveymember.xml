@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.ai4.surveymember.SurveymemberDAOInter">
+
+<!-- 등록 (설문조사 제출하기) -->
+<insert id="create" parameterType="SurveymemberVO">
+INSERT INTO fsurveymember(surveymemberno, surveyitemno, memberno, rdate)
+VALUES((SELECT NVL(MAX(surveyitemno), 0)+1 as surveyitemno FROM fsurveyitem), 
+         #{surveyitemno}, #{memberno}, sysdate)
+</insert>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>

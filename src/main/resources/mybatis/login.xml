@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.ai4.login.LoginDAOInter">
+  
+  <insert id="create" parameterType="LoginVO">
+    INSERT INTO flogin(loginno, ip, ldate, memberno)
+    VALUES((SELECT NVL(MAX(loginno), 0)+1 as loginno FROM flogin),
+    #{ip}, sysdate, #{memberno})
+  </insert>
+  
+  <select id="list" resultType = "Member_LoginVO" >
+    SELECT m.memberno, m.email, m.nickname, 
+              l.loginno, l.ip, l.ldate
+    FROM fmember m, flogin l
+    WHERE m.memberno = l.memberno 
+    ORDER BY loginno DESC
+  </select> 
+  
+  <select id="list_memberno" resultType = "LoginVO" parameterType="int">
+    SELECT loginno, ip, ldate, memberno
+    FROM flogin
+    WHERE memberno =#{memberno}
+  </select>
+  
+  <delete id = "delete" parameterType = "int">
+    DELETE FROM flogin
+    WHERE memberno = #{memberno}
+  </delete>
+  
+  <select id="count_memno" resultType = "int" parameterType="int">
+    SELECT count(loginno) as cnt
+    FROM flogin
+    WHERE memberno =#{memberno}
+  </select>
+</mapper>

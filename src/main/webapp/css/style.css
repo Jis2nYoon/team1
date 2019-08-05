@@ -1,0 +1,604 @@
+  /*
+    Flea Market 팀프로젝트 css
+    version 3.0 (3차 통합)
+  */
+  
+  @import url('https://fonts.googleapis.com/css?family=Tangerine|Frank+Ruhl+Libre|Noto+Serif+KR&display=swap');
+  /* 모든 태그에 적용 */
+  *{
+     font-family: 'Noto Serif KR', serif, 'Frank Ruhl Libre', serif;
+     margin: 0px;  /* top right bottom left */
+     padding: 0px;
+     font-size: 16px;
+     color: #555555;
+  } 
+  
+    .title_line {
+    color: #555555;
+    width: 20%;
+    margin: 20px auto;
+    padding: 3px;
+    background-color: #FFFFFF;
+    border-top: none;
+    border-right: none;
+    border-bottom: solid 5px #AAAAAA;
+    border-left: none;
+    text-align: center;
+  }
+  body {
+    background-color: #FFFFFF !important;
+    width: 100%;
+  }
+  .container{
+    width: 100% !important;
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+  }
+  .content{
+    padding-right: 10% !important;
+    padding-left: 10% !important;
+    width: 100% !important;
+  }
+  /*** 지선's css 시작 ***/
+/* Loading Icon  시작 source by: https://codepen.io/edanny/pen/oxJjrZ */  
+.centerMe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+}
+
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -40px 0 0 -40px;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  border: 15px solid #2c3e50;
+  border-top-color: #2980b9;
+  -webkit-animation: spin 1s infinite linear;
+          animation: spin 1s infinite linear;
+}
+
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+/* Loading Icon  끝 */ 
+  .panel_gray {
+    padding: 10px 0px 10px 0px; 
+    background-color: #F9F9F9; 
+    width: 100%; 
+    text-align: center;'
+  }
+  /* 하이퍼링크 css 시작*/
+  A:link{  /* 방문전 상태 */
+    text-decoration: none; /*밑줄 삭제 */
+    color: #555555;
+  }
+  A:visited{  /* 방문후 상태 */
+    text-decoration: none; /*밑줄 삭제 */
+    color: #555555;
+  }
+  A:hover{  /* 테이블 A 태그에 마우스가 올라간 상태 */
+    text-decoration: underline;
+    color: #942C3C!important;
+  }
+  A:active{  /* A 태그를 클릭한 상태 */
+    text-decoration: none; /*밑줄 삭제 */
+    color: #555555;
+  }
+  /* 하이퍼링크 css 끝*/
+  .texthover:hover{  /* texthover효과 */
+    text-decoration: none !important;
+    background-color: #555555 !important;
+    color: #FFFFFF !important;
+  }  
+  form{/* form에 css 추가 */
+   margin: 20px auto;
+  }
+  .carousel-caption p{
+    color: #FFFFFF !important;
+  }
+  .mytable td, .mytable th{
+    border:0px !important;
+  }
+  /* 글 목록 css 시작*/
+  .ndc_span{
+    font-size: 0.9em;
+    color: #b3b3b3;
+  }
+  .title_span{
+    font-weight: bold;
+  }
+  .reply_span{ /* grid list에서 댓글 색깔 */
+    color: #cc0000;
+  }
+  /* 글 목록 css 끝*/
+  /*댓글 관련 css 시작*/
+  .myreply_span{
+    color: #942C3C;
+  }
+  .myreply_btn{
+    cursor: pointer;
+    background-color: transparent !important;
+    background-image: none !important;
+    border-color: transparent;
+    border: none;
+    color: #942C3C;
+  }
+  .myreply_btn:hover{  /* 테이블 A 태그에 마우스가 올라간 상태 */
+    text-decoration: none; /*밑줄 삭제 */
+    color: #555555 !important;
+  }
+  .myreply_btn :active{  /* A 태그를 클릭한 상태 */
+    text-decoration: none; /*밑줄 삭제 */
+    color: #c0c0c0 !important;
+  }
+/*댓글 관련 css 시작 끝*/
+/* span 글씨 좌우반전, x축으로 180도 회전 */
+.gly-rotate-180 {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+  -webkit-transform: rotateX(180deg);
+  -moz-transform: rotateX(180deg);
+  -ms-transform: rotateX(180deg);
+  -o-transform: rotateX(180deg);
+  transform: rotateX(180deg);
+}
+/* 데스크탑 */
+.reply_indent{
+  text-align: right;
+}
+ /*모바일 */
+@media screen and (max-width: 768px) {.reply_indent {text-align: left;}}
+
+
+/**navbar css*/
+/* brand 마크 속성 */
+.mybrand{
+  float: left !important;
+  padding: 2em 1.5em !important;
+  background-color: #22232D !important;
+  overflow: visible;
+}
+.mybrand:hover{
+  background-color: #22232D !important;
+}
+.mybrandtext{
+  font-size: 2.5em;
+  font-family: 'Tangerine', cursive !important;
+  color: white !important;
+  text-decoration: none !important; /*밑줄 삭제 */
+}
+.mybarndtext A:hover{
+  text-decoration: none !important; /*밑줄 삭제 */
+}
+/* 프로필 이미지 속성 */
+.rounded-circle {
+  border-radius: 50%;
+  height: 30px;
+}
+
+.mynavbar {
+  overflow: hidden;
+  background-color: #22232D;
+}
+
+.mynavbar a {
+  float: right;
+  font-size: 16px;
+  color: white;
+  text-align: center;
+  padding: 19px;
+  text-decoration: none;
+  height: 60px;
+  vertical-align: middle;
+}
+
+.mydropdown {
+  float: right;
+  overflow: hidden;
+}
+
+.mydropdown .dropbtn {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+  height: 60px;
+}
+
+/* 드롭버튼 hover 색깔 */
+.mynavbar a:hover, .mydropdown:hover .dropbtn {
+  background-color: #942C3C;
+  color: white !important;
+}
+
+.mydropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #22232D;
+  min-width: 160px;
+  color: white;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.mydropdown-content ul {
+  list-style: none;
+}
+.mydropdown-content a .mytextcolor {
+  color: white;
+}
+.mytextcolor{
+  color: white;
+}
+
+.mydropdown-content a {
+  cursor: pointer;
+  float: none;
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  height: 40px;
+}
+/* 드롭다운 배경색 */
+.mydropdown-content a:hover {
+  background-color: #B3C1CD;
+  color: #white !important;
+}
+.mydropdown:hover .mydropdown-content {
+  display: block;
+}
+.mydropdown.active .mydropdown-content{
+  display: block;
+}
+.myindent{
+  /*text-indent: 5px;*/
+  padding-left: 10px;
+}
+.mycollapsecontent{
+  background-color: #536071;
+}
+/* 검색 navbar */
+.mynavbar .search-container {
+  float: center;
+}
+
+.mynavbar input[type=text] {
+  padding: 6px;
+  font-size: 17px;
+  border: none;
+  border-bottom: 1px solid #942C3C;
+  background-color: #22232D;
+  color: white;
+  width: 300px;
+}
+.mynavbar input[type=text]:focus{
+  background-color: #B3C1CD;
+}
+.mynavbar input::placeholder {
+  color: white;
+  font-style: italic;
+}
+
+.mynavbar select {
+  -webkit-appearance: none; /* 네이티브 외형 감추기 */
+  -moz-appearance: none;
+  appearance: none;
+  /*background: url(이미지 경로) no-repeat 95% 50%; /* 화살표 모양의 이미지 */
+}
+
+/* IE 10, 11의 네이티브 화살표 숨기기 */
+.mynavbar select::-ms-expand {
+  display: none;
+}
+
+.mynavbar select {
+  text-align-last:center;
+  padding: 6px;
+  font-size: 17px;
+  /*background: url(https://farm1.staticflickr.com/379/19928272501_4ef877c265_t.jpg) no-repeat 95% 50%; /* 네이티브 화살표 대체 */
+  border: none;
+  border-radius: 0px; /* iOS 둥근모서리 제거 */
+  -webkit-appearance: none; /* 네이티브 외형 감추기 */
+  -moz-appearance: none;
+  appearance: none;
+  color: white;
+  background-color: #22232D;
+  cursor: pointer;
+}
+.mynavbar select:hover{
+  background-color: #942C3C;
+}
+.mynavbar select:focus{
+  background-color: #B3C1CD;
+}
+.mynavbar option {
+  color: white;
+  font-size: 17px;
+  padding: 6px;
+  text-align-last:center;
+}
+.mynavbar option:checked, option:hover {
+  color: #B3C1CD;
+  font-weight: bold;
+  background-color: #b0c9eb;
+  text-align-last:center;
+}
+.search-form{
+  margin-left: 30%;
+  padding: 10px;
+}
+.mynavbar .search-container button {
+  padding: 6px;
+  border: none;
+  cursor: pointer;
+  color: white !important;
+  font-size: 17px;
+  background-color: #22232D;
+}
+
+.mynavbar .search-container button:hover{
+  background-color: #942C3C;
+}
+/* 모바일 */
+@media screen and (max-width: 600px) {
+  .mybrand{
+    width: 100%;
+    position: relative;
+    height: 100px !important;
+  }
+  .search-form{
+    margin-left: auto;
+    padding: 10px;
+  }
+  .mynavbar select {
+    width: 100%;
+    text-align: center;
+    float: none;
+  }
+  .mynavbar .search-container {
+    float: none;
+  }
+  .mynavbar a, .mynavbar input[type=text], .mynavbar .search-container button {
+    float: none;
+    display: block;
+    text-align: center;
+    width: 100%;
+    margin: 0;
+    padding: 14px;
+    float: none;
+  }
+  .mynavbar input[type=text] {
+    border: 1px solid #ccc;
+    text-align: center;
+    float: none;
+  }
+  .mydropdown {
+    text-align: center;
+    float: none;
+    width: 100%;
+    position: relative;
+  }
+  .mydropdown .dropbtn{
+    width: 100%;
+    float: none;
+    position: relative;
+  }
+  .mydropdown .dropbtn:hover{
+    float: none;
+  }
+  .mydropdown ul{
+    width: 100%;
+    float: none;
+    position: relative;
+  }
+  .mydropdown ul:hover{
+    display: block;
+    float: none;
+    
+  }
+  .mydropdown-content {
+    text-align: center;
+    float: none;
+    width: 100%;
+    position: relative;
+  }
+  }
+  .gradepanel{
+    background-color: #e6e6e6;
+    background-clip: content-box;
+    border-radius: 20px;
+    padding: 15px 15px 15px 15px
+  }
+
+/*** 지선's css 끝 ***/
+
+/*** 다솜's css 시작 ***/
+
+/* 기타 메시지 */
+.menu_line {
+    width: 100%;
+    border-bottom: dotted 1px #777777;
+    margin: 20px 0px 10px 0px; /* top -> right -> bottom -> left */
+    clear: both;
+  } 
+  /* ASIDE 서브메뉴의 시작 -------------------------- */
+    .aside_menu { /* 서브 메뉴 */
+    width: 100%;
+    border: none;
+    margin: 10px auto;
+  }
+ 
+  .menu_line {
+    width: 100%;
+    border-bottom: dotted 1px #777777;
+    margin: 20px 0px 10px 0px; /* top -> right -> bottom -> left */
+    clear: both;
+  } 
+  
+  /* ASIDE 메뉴 세로 구분선 */
+  .menu_divide {
+    color: #777777;
+    font-size: 0.8em; /* 부모 태그에비해 글자를 80% 크기로 출력 */
+  }  
+  
+  /* ASIDE 서브메뉴의 종료 -------------------------- */
+
+  /* icon star css 시작 */
+  .starOff{
+    clear: both;
+    background: url('./image/icon_star2.gif') repeat-x;
+    background-size: 18px;
+    display: inline-block; /* span태그는 기본이 inline이므로 display가 block일때만 width지정가능 */
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    border: 0px;
+    width: 90px;
+    height: 18px;
+    z-index: 0;
+  }
+  .starOn{
+    clear: both;
+    background: url('./image/icon_star.gif') repeat-x;
+    background-size: 18px;
+    display: inline-block;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    border: 0px;
+    width: 0px;
+    height: 18px;
+    z-index: 10;
+  }
+  /* icon star css 끝 */
+  /* big star css 시작 */
+  .bigstarOff{
+    float: left;
+    clear: both;
+    background: url('./image/star.png') repeat-x;
+    display: inline-block; 
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    border: 0px;
+    width: 300px;
+    height: 60px;
+    z-index: 0;
+  }
+  .bigstarOn{
+    float: left;
+    clear: both;
+    background: url('./image/star_on.png') repeat-x;
+    display: inline-block;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    border: 0px;
+    width: 0px;
+    height: 60px;
+    z-index:10;
+  }
+  /* big star css 끝 */
+  /*** 다솜's css 끝 ***/
+
+
+  /*** 은진's css 시작 ***/
+
+/* 채팅 화면에서 내 프로필 속성 */
+  .contact-profile {
+  width: 100%;
+  height: 60px;
+  line-height: 60px;
+  background: #f5f5f5;
+}
+  .contact-profile_img {
+  width: 40px;
+  border-radius: 50%;
+  float: left;
+  margin: 9px 12px 0 9px;
+}
+  .contact-profile p {
+  float: left;
+}
+/* 채팅 화면에서 내 프로필 속성 끝 */
+
+  .messages_container{
+    background: #32465a;
+}
+
+/* 메세지 부분의 기본 공통적인 속성 시작 */
+  .messages_container .messages_content  ul li {
+  display: inline-block;
+  clear: both;
+  float: left;
+  margin: 15px 15px 5px 15px;
+  width: calc(100% - 25px);
+  font-size: 0.9em;
+}
+/* 메세지 부분의 기본 공통적인 속성2 끝 */
+/* 보낸 사람 css 왼쪽 정렬 시작*/
+  .messages_container .messages_content .sent img {
+  margin: 6px 8px 0 0;
+}
+  .messages_container .messages_content .sent p {
+  background: #435f7a;
+  color: #f5f5f5;
+}
+/* 보낸 사람 css 왼쪽 정렬 끝*/
+/* 받은 사람 css 오른쪽 정렬 시작*/
+  .messages_container .messages_content .replies img {
+  float: right;
+  margin: 6px 0 0 8px;
+}
+  .messages_container .messages_content .replies p {
+  background: #f5f5f5;
+  float: right;
+}
+/* 받은 사람 css 오른쪽 정렬 끝*/
+/* 메세지 부분의 기본 공통적인 속성 시작 */
+  .messages_container .messages_content ul li img {
+  width: 22px;
+  border-radius: 50%;
+  float: left;
+}
+  .messages_container .messages_content ul li p {
+  display: inline-block;
+  padding: 10px 15px;
+  border-radius: 20px;
+  max-width: 500px; /*이부분의 폭과 높이를 은진이가 수정해서 보기 이쁘게 하면 될거 같아 */
+  line-height: 130%;
+}
+/* 메세지 부분의 기본 공통적인 속성 끝 */
+/* 메세지 입력 부분 시작*/
+  .message-input {
+
+}
+/* 메세지 입력 부분 끝 */
+  
+  /*** 은진's css 시작 ***/
+  

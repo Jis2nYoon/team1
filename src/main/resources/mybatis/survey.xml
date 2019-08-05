@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.ai4.survey.SurveyDAOInter">
+
+<!-- 설문조사 질문 등록 -->
+<insert id="create" parameterType="SurveyVO">
+  INSERT INTO fsurvey(surveyno, title, content, startdate, enddate, cnt)
+  VALUES((SELECT NVL(MAX(surveyno), 0)+1 as surveyno FROM fsurvey), 
+          #{title}, #{content}, #{startdate}, #{enddate}, 0)
+</insert>
+
+<!-- 설문조사 질문 목록(사용자) -->
+<select id="list_user" resultType="SurveyVO" >
+  SELECT *
+  FROM fsurvey
+  WHERE (enddate > sysdate)
+  ORDER BY enddate ASC
+</select>
+
+<!-- 설문조사 질문 목록(관리자) -->
+<select id="list_admin" resultType="SurveyVO" >
+  SELECT *
+  FROM fsurvey
+  ORDER BY enddate ASC
+</select>
+
+<!-- 조회(사용자) : 설문조사 질문 제목 내용 + 설문조사 항목이 같이 나와야하기 때문에 join 필요(추후 수정) -->
+<select id="read_join" resultType="Survey_ItemVO" parameterType="int">
+  SELECT s.surveyno, s.title, s.content, s.startdate, s.enddate, s.cnt,
+            i.surveyitemno, i.surveyno, i.item, i.itemcnt
+  FROM fsurvey s, fsurveyitem i
+  WHERE surveyno = #{surveyno} and (s.surveyno = i.surveyno)
+</select>
+
+<!-- 설문조사 1건 조회 -->
+<select id="read" resultType="SurveyVO" parameterType="int">
+  SELECT surveyno, title, content, startdate, enddate, cnt
+  FROM fsurvey
+  WHERE surveyno = #{surveyno}
+</select>
+
+<!-- ======================================================== -->
+<!-- surveyitem 테이블 먼저 생성 목록 수정 삭제 만들기 -->
+
+<!-- 설문조사 질문 수정(조회도 같이 됨 - 관리자) + 조인 추가-->
+<update id="update" parameterType="SurveyVO">
+  UPDATE fsurvey
+  SET title=#{title}, content=#{content}, startdate=#{startdate}, enddate=#{enddate}
+  WHERE surveyno = #{surveyno}
+</update>  
+  
+<!-- 설문조사 질문 삭제(관리자) -->
+<delete id="delete" parameterType = "int">
+  DELETE FROM fsurvey
+  WHERE surveyno = #{surveyno}
+  </delete>
+</mapper>

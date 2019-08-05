@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.ai4.member.MemberDAOInter">
+
+  <select id="checkEmail" parameterType="String" resultType = "int">
+    SELECT COUNT(email) as cnt
+    FROM fmember
+    WHERE email=#{email}
+  </select>
+
+  <select id="checkNickname" parameterType="String" resultType = "int">
+    SELECT COUNT(nickname) as cnt
+    FROM fmember
+    WHERE nickname=#{nickname}
+  </select>
+  
+  <select id="getPhoto" resultType="MemberVO" parameterType = "int">
+    SELECT thumbs, photo, sizes
+    FROM fmember
+    WHERE memberno = #{memberno}
+  </select>
+
+<!--   <insert id="create" parameterType="MemberVO">
+    INSERT INTO fmember(memberno, 
+                                   email, passwd, nickname, mname, tel, zipcode, 
+                                   address1, address2, act, stopdate, mdate)
+    VALUES((SELECT NVL(MAX(memberno), 0)+1 as memberno FROM fmember),
+                #{email}, #{passwd}, #{nickname}, #{mname}, #{tel}, #{zipcode}, 
+                                   #{address1}, #{address2}, 'Y', "", sysdate)
+  </insert> -->
+  
+  <insert id="create" parameterType="MemberVO">
+    INSERT ALL INTO fmember 
+    VALUES (memberno, 
+                #{email}, #{passwd},'','','0', #{nickname}, #{mname}, #{tel}, #{zipcode},
+                #{address1}, #{address2}, 'Y','', sysdate)  
+    INTO fgrade 
+    VALUES ((SELECT NVL(MAX(gradeno), 0)+1 as gradeno FROM fgrade),
+                0, 0, 0, 0, 0, memberno)
+    SELECT (NVL(MAX(memberno), 0)+1) as memberno 
+    FROM fmember
+  </insert>
+
+<!--   <select id="list" resultType="MemberVO" >
+    SELECT memberno, email, passwd, nickname, mname, tel, zipcode, 
+              address1, address2, act, stopdate, mdate
+    FROM fmember
+    ORDER BY memberno ASC
+  </select> -->
+  
+<!--   <select id="list_paging" resultType="MemberVO"  parameterType="HashMap">
+    SELECT memberno, email, passwd, nickname, mname, tel, zipcode,  
+              address1, address2 , act, stopdate, mdate, r
+    FROM(
+             SELECT memberno, email, passwd, nickname, mname, tel, zipcode,  
+                      address1, address2 , act, stopdate, mdate, rownum as r
+            FROM(
+                      SELECT memberno, email, passwd, nickname, mname, tel, zipcode,  
+                                address1, address2 , act, stopdate, mdate
+                      FROM fmember
+                     ORDER BY stopdate DESC
+             )
+    )
+    WHERE <![CDATA[r >= #{startNum} AND r <= #{endNum}]]>
+  </select> -->
+
+ <!-- 카테고리별 검색된 레코드 갯수 -->
+  <select id="search_count" resultType="int" parameterType="HashMap">
+    SELECT COUNT(*) as cnt
+    FROM fmember
+    <choose>                        
+      <when test="col == 'email'"> <!-- email 검색 -->
+        WHERE email LIKE '%' || #{word} || '%'
+      </when>
+      <when test="col == 'nickname'"> <!-- nickname 검색 -->
+        WHERE nickname LIKE '%' || #{word} || '%'
+      </when>
+      <when test="col == 'mname'"> <!-- mname 검색 -->
+        WHERE mname LIKE '%' || #{word} || '%'
+      </when>                          
+       <when test="col == 'act'"> <!-- act 필터 -->
+        WHERE act = #{word}
+       </when>       
+       <when test="col == 'stopdate'"><!--  stopdate 정렬 -->
+         ORDER BY stopdate ASC
+       </when>    
+       <otherwise>            
+         ORDER BY memberno ASC
+        </otherwise>         
+       </choose>
+  </select>
+
+<!-- column 별  검색된 레코드 목록 + 페이징-->
+<select id="list_search_paging" resultType="MemberVO" parameterType="HashMap">
+    SELECT memberno, email, passwd, thumbs, sizes, nickname, mname, tel, zipcode,  
+              address1, address2 , act, stopdate, mdate, r
+    FROM(
+             SELECT memberno, email, passwd, thumbs, sizes, nickname, mname, tel, zipcode,  
+                      address1, address2 , act, stopdate, mdate, rownum as r
+             FROM(
+                      SELECT memberno, email, passwd, thumbs, sizes, nickname, mname, tel, zipcode,  
+                                address1, address2 , act, stopdate, mdate
+                      FROM fmember
+                      <choose>                        
+                        <when test="col == 'email'"> <!-- email 검색 -->
+                          WHERE email LIKE '%' || #{word} || '%'
+                        </when>
+                        <when test="col == 'nickname'"> <!-- nickname 검색 -->
+                          WHERE nickname LIKE '%' || #{word} || '%'
+                        </when>
+                        <when test="col == 'mname'"> <!-- mname 검색 -->
+                          WHERE mname LIKE '%' || #{word} || '%'
+                        </when>                          
+                        <when test="col == 'act'"> <!-- act 필터 -->
+                          WHERE act = #{word}
+                        </when>       
+                        <when test="col == 'stopdate'"><!--  stopdate 정렬 -->
+                          ORDER BY stopdate ASC
+                        </when>    
+                        <otherwise>            
+                          ORDER BY memberno ASC
+                        </otherwise>         
+                      </choose>
+             )
+    )
+    WHERE <![CDATA[r >= #{startNum} AND r <= #{endNum}]]>
+  </select>
+  
+ <select id="read" resultType="MemberVO" parameterType="int">
+    SELECT memberno, email, passwd, thumbs, photo,sizes, nickname, mname, tel, zipcode, 
+              address1, address2, act, stopdate, mdate
+    FROM fmember
+    WHERE memberno = #{memberno}
+  </select>
+  
+  <select id="readByEmail" resultType="MemberVO" parameterType="String">
+    SELECT memberno, email, passwd, thumbs, photo, sizes, nickname, mname, tel, zipcode, 
+              address1, address2, act, stopdate, mdate
+    FROM fmember
+    WHERE email = #{email}
+  </select>
+ 
+  <update id="update" parameterType="MemberVO">
+    UPDATE fmember
+    SET nickname = #{nickname}, mname=#{mname}, tel=#{tel}, zipcode=#{zipcode}, 
+          address1=#{address1}, address2=#{address2}
+    WHERE memberno = #{memberno}
+  </update>  
+  
+  <update id="photo_update" parameterType="MemberVO">
+    UPDATE fmember
+    SET thumbs= #{thumbs}, photo = #{photo}, sizes = #{sizes}
+    WHERE memberno =#{memberno}
+  </update> 
+ 
+  <update id="cancel" parameterType="int">
+    UPDATE fmember
+    SET nickname = '-', zipcode='',  address1='', address2='', act = 'C', stopdate='',thumbs='', photo='' ,sizes =''
+    WHERE memberno =#{memberno}
+  </update>
+ 
+  <update id="act_update" parameterType="HashMap">
+    UPDATE fmember
+    SET act = #{act}
+    WHERE memberno = #{memberno}
+  </update>  
+    
+<!--   <update id="stopdate_update" parameterType="HashMap">
+    UPDATE fmember
+    SET stopdate = #{stopdate}
+    WHERE memberno = #{memberno}
+  </update>   -->
+  
+    <update id="stopdate_update" parameterType="HashMap">
+    UPDATE fmember
+    SET stopdate = #{stopdate}
+    WHERE memberno = #{memberno}
+  </update>  
+  
+  <update id="passwd_update" parameterType="HashMap">
+    UPDATE fmember
+    SET passwd = #{passwd}
+    WHERE email = #{email}
+  </update>
+  
+  <delete id = "delete" parameterType = "int">
+     DELETE FROM fmember
+     WHERE memberno = #{memberno}
+  </delete>
+  
+  <select id = "login" parameterType = "HashMap" resultType = "int">
+    SELECT COUNT(*) as cnt
+    FROM fmember
+    WHERE email=#{email} AND passwd=#{passwd}
+  </select>
+  
+  <select id = "search_email" parameterType = "HashMap" resultType = "String">
+    SELECT email
+    FROM fmember
+    WHERE mname=#{mname}
+    AND tel = #{tel}
+  </select>
+  <!-- 은진 추가 -->
+  <!-- 회원번호로 닉네임 조회 -->
+  <select id="nick_select" parameterType="int" resultType="String">
+    SELECT nickname
+    FROM fmember
+    WHERE memberno=#{memberno}
+  </select>
+</mapper> 
